@@ -5,7 +5,7 @@ Markdown presentation writer with Elm.
 ## Feature
 
 - [x] Common Markdown
-- [ ] Code hylight
+- [x] Code hylight
 - [ ] Formula
 - [ ] Scales the image up/down
 - [ ] Read from/Write to local file
@@ -17,9 +17,11 @@ Markdown presentation writer with Elm.
 
 ```
 $ elm package install --yes
-$ elm make src/Main.elm --output ./_compile/main.js
+$ elm make src/Main.elm --output ./js/main.js
 $ chrome index.html
 ```
+
+if you want to syntax highlight using customize highlight.js, [download highlight.pack.js](https://highlightjs.org/download) and put `js` directory.
 
 ## Demo
 

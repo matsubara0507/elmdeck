@@ -3,10 +3,13 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import HtmlParser as Html
+import HtmlParser.Util as Html
 import Markdown.Block as Block exposing (Block)
 import Markdown.Block.Extra as Block
 import Markdown.Config exposing (HtmlOption(..))
 import Markdown.Inline as Inline
+import Maybe
 import Regex
 import Task
 import Utils
@@ -144,11 +147,24 @@ customHtmlBlock block =
                 (List.map Inline.toHtml inlines)
             ]
 
+        Block.CodeBlock (Block.Fenced _ fence) code ->
+            let
+                language =
+                    Maybe.withDefault "" fence.language
+            in
+            code
+                |> Utils.toHighlight language
+                |> precode language
+                |> Html.parse
+                |> Html.toVirtualDom
+
         _ ->
-            Block.defaultHtml
-                (Just customHtmlBlock)
-                Nothing
-                block
+            Block.defaultHtml (Just customHtmlBlock) Nothing block
+
+
+precode : String -> String -> String
+precode lang code =
+    "<pre><code class=\"" ++ lang ++ "\">" ++ code ++ "</code></pre>"
 
 
 formatToCLink : String -> String
