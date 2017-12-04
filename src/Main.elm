@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Markdown.Block as Block exposing (Block)
+import Markdown.Block.Extra as Block
 import Markdown.Config exposing (HtmlOption(..))
 import Markdown.Inline as Inline
 import Regex
@@ -78,23 +79,30 @@ view model =
 
 markdownView : Model -> Html Msg
 markdownView { textarea, window } =
-    let
-        blocks =
-            Block.parse Nothing textarea
-
-        blocksView =
-            blocks
-                |> Utils.split ((==) Block.ThematicBreak)
-                |> List.map (List.concatMap customHtmlBlock)
-    in
-    blocksView
-        |> List.map (slideView window)
+    textarea
+        |> Block.parse Nothing
+        |> Utils.split ((==) Block.ThematicBreak)
+        |> List.map (toSlide window)
         |> div []
 
 
-slideView : Window.Size -> List (Html msg) -> Html msg
-slideView window slide =
-    div [ class "slide", slideSize window ]
+toSlide : Window.Size -> List (Block b i) -> Html msg
+toSlide window blocks =
+    let
+        attrs =
+            if Block.isHeadPage blocks then
+                [ class "headPage" ]
+            else
+                []
+    in
+    blocks
+        |> List.concatMap customHtmlBlock
+        |> slideView window attrs
+
+
+slideView : Window.Size -> List (Attribute msg) -> List (Html msg) -> Html msg
+slideView window attrs slide =
+    div (attrs ++ [ class "slide", slideSize window ])
         [ div [ class "slideContents" ] slide ]
 
 
