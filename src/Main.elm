@@ -7,31 +7,45 @@ import Markdown.Block as Block exposing (Block)
 import Markdown.Config exposing (HtmlOption(..))
 import Markdown.Inline as Inline
 import Regex
+import Task
+import Utils
+import Window
 
 
 main : Program Never Model Msg
 main =
     Html.program
-        { init = ( init, Cmd.none )
+        { init = init model
         , view = view
         , update = update
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = \_ -> Window.resizes SizeUpdated
         }
 
 
 type alias Model =
     { textarea : String
+    , window : Window.Size
     }
 
 
-init : Model
-init =
+model : Model
+model =
     { textarea = ""
+    , window = { width = 0, height = 0 }
     }
+
+
+init : Model -> ( Model, Cmd Msg )
+init model =
+    ( model
+    , Window.size
+        |> Task.perform SizeUpdated
+    )
 
 
 type Msg
     = TextAreaInput String
+    | SizeUpdated Window.Size
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -40,11 +54,14 @@ update msg model =
         TextAreaInput str ->
             ( { model | textarea = str }, Cmd.none )
 
+        SizeUpdated size ->
+            ( { model | window = size }, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
     [ div [ displayFlex ]
-        [ div [ width50Style ]
+        [ div [ halfStyle model.window ]
             [ textarea
                 [ onInput TextAreaInput
                 , defaultValue model.textarea
@@ -52,7 +69,7 @@ view model =
                 ]
                 []
             ]
-        , div [ width50Style, style [ ( "background", "#4c4b4b" ) ] ]
+        , div [ class "slides", halfStyle model.window ]
             [ markdownView model ]
         ]
     ]
@@ -60,23 +77,25 @@ view model =
 
 
 markdownView : Model -> Html Msg
-markdownView { textarea } =
+markdownView { textarea, window } =
     let
         blocks =
             Block.parse Nothing textarea
 
         blocksView =
-            List.concatMap customHtmlBlock blocks
-
-        style_ =
-            style
-                [ ( "width", "90%" )
-                , ( "background", "white" )
-                , ( "margin", "auto" )
-                ]
+            blocks
+                |> Utils.split ((==) Block.ThematicBreak)
+                |> List.map (List.concatMap customHtmlBlock)
     in
     blocksView
-        |> div [ style_ ]
+        |> List.map (slideView window)
+        |> div []
+
+
+slideView : Window.Size -> List (Html msg) -> Html msg
+slideView window slide =
+    div [ class "slide", slideSize window ]
+        [ div [ class "slideContents" ] slide ]
 
 
 
@@ -139,16 +158,38 @@ displayFlex =
     style [ ( "display", "flex" ) ]
 
 
-width50Style : Attribute msg
-width50Style =
-    style [ ( "width", "50%" ) ]
+halfStyle : Window.Size -> Attribute msg
+halfStyle window =
+    let
+        height_ =
+            round (0.8 * toFloat window.height)
+    in
+    style
+        [ ( "width", "50%" )
+        , ( "height", toString height_ ++ "px" )
+        ]
 
 
 textareaStyle : Attribute msg
 textareaStyle =
     style
-        [ ( "width", "90%" )
-        , ( "height", "400px" )
+        [ ( "width", "98%" )
+        , ( "height", "100%" )
+        ]
+
+
+slideSize : Window.Size -> Attribute msg
+slideSize window =
+    let
+        width_ =
+            round (0.45 * toFloat window.width)
+
+        height_ =
+            width_ // 4 * 3
+    in
+    style
+        [ ( "width", toString width_ ++ "px" )
+        , ( "height", toString height_ ++ "px" )
         ]
 
 
