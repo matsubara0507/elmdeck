@@ -2,9 +2,9 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onCheck, onClick, onInput)
+import Html.Events exposing (onInput)
 import Markdown.Block as Block exposing (Block)
-import Markdown.Config exposing (HtmlOption(..), defaultOptions, defaultSanitizeOptions)
+import Markdown.Config exposing (HtmlOption(..))
 import Markdown.Inline as Inline
 import Regex
 
@@ -12,7 +12,7 @@ import Regex
 main : Program Never Model Msg
 main =
     Html.program
-        { init = init ! []
+        { init = ( init, Cmd.none )
         , view = view
         , update = update
         , subscriptions = \_ -> Sub.none
@@ -21,58 +21,24 @@ main =
 
 type alias Model =
     { textarea : String
-    , options : Markdown.Config.Options
-    , showToC : Bool
     }
 
 
 init : Model
 init =
-    { textarea = readmeMD
-    , options = defaultOptions
-    , showToC = False
+    { textarea = ""
     }
 
 
 type Msg
     = TextAreaInput String
-    | SoftAsHardLineBreak Bool
-    | HtmlOption HtmlOption
-    | ShowToC Bool
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         TextAreaInput str ->
-            { model | textarea = str } ! []
-
-        SoftAsHardLineBreak bool ->
-            let
-                options =
-                    model.options
-
-                updtOptions =
-                    { options
-                        | softAsHardLineBreak = bool
-                    }
-            in
-            { model | options = updtOptions } ! []
-
-        HtmlOption htmlConfig ->
-            let
-                options =
-                    model.options
-
-                updtOptions =
-                    { options
-                        | rawHtml = htmlConfig
-                    }
-            in
-            { model | options = updtOptions } ! []
-
-        ShowToC bool ->
-            { model | showToC = bool } ! []
+            ( { model | textarea = str }, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -85,83 +51,32 @@ view model =
                 , textareaStyle
                 ]
                 []
-            , h2 [] [ text "Options" ]
-            , optionsView model
-            , h2 [] [ text "Custom" ]
-            , label []
-                [ input
-                    [ type_ "checkbox"
-                    , onCheck ShowToC
-                    , checked model.showToC
-                    ]
-                    []
-                , text " Show dynamic Table of Content"
-                ]
             ]
-        , markdownView model
+        , div [ width50Style, style [ ( "background", "#4c4b4b" ) ] ]
+            [ markdownView model ]
         ]
     ]
         |> div []
 
 
-optionsView : Model -> Html Msg
-optionsView { options } =
-    [ li []
-        [ label []
-            [ input
-                [ type_ "checkbox"
-                , onCheck SoftAsHardLineBreak
-                , checked options.softAsHardLineBreak
-                ]
-                []
-            , text " softAsHardLineBreak"
-            ]
-        ]
-    , li []
-        [ b [] [ text "rawHtml:" ]
-        , ul [ listStyle ]
-            [ rawHtmlItem options "ParseUnsafe" ParseUnsafe
-            , rawHtmlItem options "Sanitize defaultAllowed" <|
-                Sanitize defaultSanitizeOptions
-            , rawHtmlItem options "DontParse" DontParse
-            ]
-        ]
-    ]
-        |> ul [ listStyle ]
-
-
-rawHtmlItem : Markdown.Config.Options -> String -> HtmlOption -> Html Msg
-rawHtmlItem { rawHtml } value msg =
-    [ label []
-        [ input
-            [ type_ "radio"
-            , name "htmlOption"
-            , onClick (HtmlOption msg)
-            , checked (rawHtml == msg)
-            ]
-            []
-        , text value
-        ]
-    ]
-        |> li []
-
-
 markdownView : Model -> Html Msg
-markdownView { options, textarea, showToC } =
+markdownView { textarea } =
     let
         blocks =
-            Block.parse (Just options) textarea
+            Block.parse Nothing textarea
 
         blocksView =
             List.concatMap customHtmlBlock blocks
+
+        style_ =
+            style
+                [ ( "width", "90%" )
+                , ( "background", "white" )
+                , ( "margin", "auto" )
+                ]
     in
-    if showToC then
-        blocksView
-            |> (::) (tocView blocks)
-            |> div [ width50Style ]
-    else
-        blocksView
-            |> div [ width50Style ]
+    blocksView
+        |> div [ style_ ]
 
 
 
@@ -209,85 +124,6 @@ customHtmlBlock block =
                 block
 
 
-
--- Table of Content
-
-
-tocView : List (Block b i) -> Html Msg
-tocView =
-    List.concatMap (Block.query getHeading)
-        >> List.foldl organizeHeadings []
-        >> List.reverse
-        >> List.map reverseToCItem
-        >> tocViewHelp
-        >> flip (::) []
-        >> (::) (h1 [] [ text "Table of Content" ])
-        >> div []
-
-
-getHeading : Block b i -> List ( Int, String )
-getHeading block =
-    case block of
-        Block.Heading _ lvl inlines ->
-            [ ( lvl, Inline.extractText inlines ) ]
-
-        _ ->
-            []
-
-
-type ToCItem
-    = Item Int String (List ToCItem)
-
-
-organizeHeadings : ( Int, String ) -> List ToCItem -> List ToCItem
-organizeHeadings ( lvl, str ) items =
-    case items of
-        [] ->
-            [ Item lvl str [] ]
-
-        (Item lvl_ str_ items_) :: tail ->
-            if lvl <= lvl_ then
-                Item lvl str [] :: items
-            else
-                organizeHeadings ( lvl, str ) items_
-                    |> Item lvl_ str_
-                    |> flip (::) tail
-
-
-reverseToCItem : ToCItem -> ToCItem
-reverseToCItem (Item lvl heading subHeadings) =
-    List.reverse subHeadings
-        |> List.map reverseToCItem
-        |> Item lvl heading
-
-
-tocViewHelp : List ToCItem -> Html Msg
-tocViewHelp =
-    List.map tocItemView
-        >> ul []
-
-
-tocItemView : ToCItem -> Html Msg
-tocItemView (Item lvl heading subHeadings) =
-    if List.isEmpty subHeadings then
-        li [] [ tocLinkView heading ]
-    else
-        li []
-            [ tocLinkView heading
-            , tocViewHelp subHeadings
-            ]
-
-
-tocLinkView : String -> Html Msg
-tocLinkView str =
-    a
-        [ formatToCLink str
-            |> (++) "#"
-            |> Html.Attributes.href
-        ]
-        [ text str ]
-
-
 formatToCLink : String -> String
 formatToCLink =
     String.toLower
@@ -313,13 +149,6 @@ textareaStyle =
     style
         [ ( "width", "90%" )
         , ( "height", "400px" )
-        ]
-
-
-listStyle : Attribute msg
-listStyle =
-    style
-        [ ( "list-style", "none" )
         ]
 
 
