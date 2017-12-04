@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Elm Markdown</title>
+	<style type="text/css">
+		body {
+			margin:40px auto;
+			line-height:1.6;
+			font-size:18px;
+			color:#444;
+			padding:0 10px;
+		}
+		h1 {
+			padding-bottom: 0;
+			margin-bottom: 0;
+		}
+		h1, h2,h3 {
+			line-height:1.2;
+		}
+		.heading, .subheading, .loading  {
+			text-align: center;
+		}
+		.subheading {
+			margin-top: 0;
+		}
+		.slides {
+			overflow: scroll;
+			background: #4c4b4b
+		}
+		.slide {
+			background: white;
+			margin: auto;
+			margin: 10px auto;
+    	overflow: hidden;
+		}
+		.slideContents {
+	    margin: 15px;
+		}
+	</style>
+</head>
+<body>
+	<h1 class="heading">elMDeck</h1>
+	<div id="main"><h2 class="loading">Loading...</h2></div>
+	<script src="_compile/main.js"></script>
+	<script>
+    	var node = document.getElementById('main');
+    	while (node.firstChild) {
+  			node.removeChild(node.firstChild);
+		}
+    	var app = Elm.Main.embed(node);
+	</script>
+
+</body>
+</html>
