@@ -5,7 +5,7 @@ Markdown presentation writer with Elm.
 ## Feature
 
 - [x] Common Markdown
-- [x] Code hylight
+- [x] Code highlight
 - [ ] Formula
 - [ ] Scales the image up/down
 - [ ] Read from/Write to local file
