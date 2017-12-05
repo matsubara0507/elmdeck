@@ -3,6 +3,7 @@ module Utils exposing (..)
 import List
 import List.Extra as List
 import Native.Highlight
+import Native.Katex
 
 
 split : (a -> Bool) -> List a -> List (List a)
@@ -22,3 +23,8 @@ split p xs =
 toHighlight : String -> String -> String
 toHighlight =
     Native.Highlight.toHighlight
+
+
+toKatex : String -> String
+toKatex =
+    Native.Katex.toKatex

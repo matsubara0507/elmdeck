@@ -151,15 +151,25 @@ customHtmlBlock block =
             let
                 language =
                     Maybe.withDefault "" fence.language
+
+                toHighlight_ =
+                    if List.member language [ "katex", "Katex" ] then
+                        Utils.toKatex >> divFormula
+                    else
+                        Utils.toHighlight language >> precode language
             in
             code
-                |> Utils.toHighlight language
-                |> precode language
+                |> toHighlight_
                 |> Html.parse
                 |> Html.toVirtualDom
 
         _ ->
             Block.defaultHtml (Just customHtmlBlock) Nothing block
+
+
+divFormula : String -> String
+divFormula code =
+    "<div class=\"formula\">" ++ code ++ "</div>"
 
 
 precode : String -> String -> String
