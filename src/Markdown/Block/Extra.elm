@@ -1,7 +1,6 @@
 module Markdown.Block.Extra exposing (..)
 
 import Function.Extra as Function
-import List
 import Markdown.Block as Block exposing (Block)
 
 

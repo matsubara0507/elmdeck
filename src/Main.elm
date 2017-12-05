@@ -9,7 +9,6 @@ import Markdown.Block as Block exposing (Block)
 import Markdown.Block.Extra as Block
 import Markdown.Config exposing (HtmlOption(..))
 import Markdown.Inline as Inline
-import Maybe
 import Regex
 import Task
 import Utils
