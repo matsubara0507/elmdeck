@@ -8,7 +8,8 @@ import HtmlParser.Util as Html
 import Markdown.Block as Block exposing (Block)
 import Markdown.Block.Extra as Block
 import Markdown.Config exposing (HtmlOption(..))
-import Markdown.Inline as Inline
+import Markdown.Formula exposing (Formula(..), parseFormulaInBlock)
+import Markdown.Inline as Inline exposing (Inline)
 import Regex
 import Task
 import Utils
@@ -88,7 +89,7 @@ markdownView { textarea, window } =
         |> div []
 
 
-toSlide : Window.Size -> List (Block b i) -> Html msg
+toSlide : Window.Size -> List (Block b Formula) -> Html msg
 toSlide window blocks =
     let
         attrs =
@@ -98,6 +99,7 @@ toSlide window blocks =
                 []
     in
     blocks
+        |> List.map (Block.walk parseFormulaInBlock)
         |> List.concatMap customHtmlBlock
         |> slideView window attrs
 
@@ -108,44 +110,9 @@ slideView window attrs slide =
         [ div [ class "slideContents" ] slide ]
 
 
-
--- Heading Link
-
-
-customHtmlBlock : Block b i -> List (Html msg)
+customHtmlBlock : Block b Formula -> List (Html msg)
 customHtmlBlock block =
     case block of
-        Block.Heading _ level inlines ->
-            let
-                hElement =
-                    case level of
-                        1 ->
-                            h1
-
-                        2 ->
-                            h2
-
-                        3 ->
-                            h3
-
-                        4 ->
-                            h4
-
-                        5 ->
-                            h5
-
-                        _ ->
-                            h6
-            in
-            [ hElement
-                [ Html.Attributes.id
-                    (formatToCLink
-                        (Inline.extractText inlines)
-                    )
-                ]
-                (List.map Inline.toHtml inlines)
-            ]
-
         Block.CodeBlock (Block.Fenced _ fence) code ->
             let
                 language =
@@ -163,7 +130,10 @@ customHtmlBlock block =
                 |> Html.toVirtualDom
 
         _ ->
-            Block.defaultHtml (Just customHtmlBlock) Nothing block
+            block
+                |> Block.defaultHtml
+                    (Just customHtmlBlock)
+                    (Just customHtmlInline)
 
 
 divFormula : String -> String
@@ -176,10 +146,25 @@ precode lang code =
     "<pre><code class=\"" ++ lang ++ "\">" ++ code ++ "</code></pre>"
 
 
-formatToCLink : String -> String
-formatToCLink =
-    String.toLower
-        >> Regex.replace Regex.All (Regex.regex "\\s+") (always "-")
+customHtmlInline : Inline Formula -> Html msg
+customHtmlInline inline =
+    case inline of
+        Inline.Custom (Formula txt) _ ->
+            Utils.toKatex txt
+                |> Html.parse
+                |> Html.toVirtualDom
+                |> span []
+
+        _ ->
+            Inline.defaultHtml (Just customHtmlInline) inline
+
+
+formulaHtmlInline : Inline Formula -> Html msg
+formulaHtmlInline inline =
+    case inline of
+        -- Inline.CodeInine text ->
+        _ ->
+            Inline.defaultHtml (Just formulaHtmlInline) inline
 
 
 

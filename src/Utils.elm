@@ -28,3 +28,8 @@ toHighlight =
 toKatex : String -> String
 toKatex =
     Native.Katex.toKatex
+
+
+undefined : () -> a
+undefined =
+    \_ -> Debug.crash "undefined..."

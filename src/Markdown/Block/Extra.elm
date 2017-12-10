@@ -1,7 +1,33 @@
 module Markdown.Block.Extra exposing (..)
 
 import Function.Extra as Function
-import Markdown.Block as Block exposing (Block)
+import Markdown.Block exposing (..)
+import Markdown.Inline as Inline exposing (Inline)
+import Markdown.Inline.Extra as Inline
+
+
+walkInlinesWithConcat : (Inline i -> List (Inline i)) -> Block b i -> Block b i
+walkInlinesWithConcat function block =
+    walk (walkInlinesWithConcatHelper function) block
+
+
+walkInlinesWithConcatHelper : (Inline i -> List (Inline i)) -> Block b i -> Block b i
+walkInlinesWithConcatHelper function block =
+    case block of
+        Paragraph rawText inlines ->
+            List.concatMap (Inline.walkWithConcat function) inlines
+                |> Paragraph rawText
+
+        Heading rawText level inlines ->
+            List.concatMap (Inline.walkWithConcat function) inlines
+                |> Heading rawText level
+
+        PlainInlines inlines ->
+            List.concatMap (Inline.walkWithConcat function) inlines
+                |> PlainInlines
+
+        _ ->
+            block
 
 
 isHeadPage : List (Block b i) -> Bool
@@ -12,7 +38,7 @@ isHeadPage =
 isBlankLine : Block b i -> Bool
 isBlankLine block =
     case block of
-        Block.BlankLine _ ->
+        BlankLine _ ->
             True
 
         _ ->
@@ -22,7 +48,7 @@ isBlankLine block =
 isHeading : Block b i -> Bool
 isHeading block =
     case block of
-        Block.Heading _ _ _ ->
+        Heading _ _ _ ->
             True
 
         _ ->
