@@ -6,7 +6,7 @@ Markdown presentation writer with Elm.
 
 - [x] Common Markdown
 - [x] Code highlight
-- [ ] Formula
+- [x] Formula
 - [ ] Scales the image up/down
 - [ ] Read from/Write to local file
 - [ ] Customize CSS
