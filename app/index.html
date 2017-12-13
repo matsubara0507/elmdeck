@@ -62,11 +62,11 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/katex.min.js" integrity="sha384-OMvkZ24ANLwviZR2lVq8ujbE/bUO8IR1FdBrKLQBI14Gq5Xp/lksIccGkmKL8m+h" crossorigin="anonymous"></script>
 	<script>hljs.initHighlightingOnLoad();</script>
 	<script>
-    	var node = document.getElementById('main');
-    	while (node.firstChild) {
-  			node.removeChild(node.firstChild);
-		  }
-    	var app = Elm.Main.embed(node);
+			var node = document.getElementById('main');
+			while (node.firstChild) {
+					node.removeChild(node.firstChild);
+			}
+			var app = module.exports.Main.embed(node);
 	</script>
 </body>
 </html>

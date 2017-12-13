@@ -4,7 +4,8 @@
     "repository": "https://github.com/matsubara0507/elmdeck.git",
     "license": "MIT",
     "source-directories": [
-        "src"
+        ".",
+        "app/src"
     ],
     "exposed-modules": [],
     "native-modules": true,

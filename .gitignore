@@ -3,5 +3,9 @@ elm-stuff
 # elm-repl generated files
 repl-temp-*
 
-js/*
+app/js/*
+!app/js/app.js
 temp/
+
+node_modules/
+release/
