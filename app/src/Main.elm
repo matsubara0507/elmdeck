@@ -10,6 +10,7 @@ import Markdown.Block.Extra as Block
 import Markdown.Config exposing (HtmlOption(..))
 import Markdown.Formula exposing (Formula(..), parseFormulaInBlock)
 import Markdown.Inline as Inline exposing (Inline)
+import Port.FS as FS
 import Regex
 import Task
 import Utils
@@ -22,7 +23,7 @@ main =
         { init = init model
         , view = view
         , update = update
-        , subscriptions = \_ -> Window.resizes SizeUpdated
+        , subscriptions = subscriptions
         }
 
 
@@ -208,6 +209,14 @@ slideSize window =
     style
         [ ( "width", toString width_ ++ "px" )
         , ( "height", toString height_ ++ "px" )
+        ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ Window.resizes SizeUpdated
+        , FS.readFile TextAreaInput
         ]
 
 

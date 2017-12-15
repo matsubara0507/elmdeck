@@ -4,7 +4,9 @@
   "scripts": {
     "run": "./node_modules/.bin/electron ."
   },
-  "dependencies": {},
+  "dependencies": {
+    "jquery": "*"
+  },
   "devDependencies": {
     "electron-connect": "^0.6.2",
     "electron-packager": "^8.7.2",

@@ -5,6 +5,8 @@ repl-temp-*
 
 app/js/*
 !app/js/app.js
+!app/js/files.js
+!app/js/menuItems.js
 temp/
 
 node_modules/

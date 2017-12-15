@@ -61,11 +61,35 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/katex.min.js" integrity="sha384-OMvkZ24ANLwviZR2lVq8ujbE/bUO8IR1FdBrKLQBI14Gq5Xp/lksIccGkmKL8m+h" crossorigin="anonymous"></script>
 	<script>hljs.initHighlightingOnLoad();</script>
 	<script>
-			var node = document.getElementById('main');
-			while (node.firstChild) {
-					node.removeChild(node.firstChild);
+		window.jQuery = window.$ = require('../node_modules/jquery/dist/jquery.min.js');
+	</script>
+	<script type="text/javascript" href="js/files.js"></script>
+	<script>
+		const {remote} = require('electron');
+		const {Menu, MenuItem} = remote;
+		const files = require('./js/files');
+		const menuItems = require('./js/menuItems')
+
+		var node = document.getElementById('main');
+		while (node.firstChild) {
+			node.removeChild(node.firstChild);
+		}
+		var app = module.exports.Main.embed(node);
+
+		var menuvar = new Menu();
+		menuvar.append(new MenuItem(
+			{
+				label: 'File',
+				submenu: [
+					{
+						label: 'Open',
+						click() { files.readFile(app) }
+					}
+				]
 			}
-			var app = module.exports.Main.embed(node);
+		));
+		menuItems.get().forEach( item => { menuvar.append(item) } );
+		Menu.setApplicationMenu(menuvar)
 	</script>
 </body>
 </html>
