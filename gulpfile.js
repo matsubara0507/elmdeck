@@ -31,9 +31,9 @@ g.task('package', ['elm'], ()=>{
     overwrite: true,
   }
 
-  darwinParam = extend(commonParam, {platform:'darwin', icon: './image/elmtrn.icns'});
-  linuxParam  = extend(commonParam, {platform:'linux',  icon: './image/elmtrn.png'});
-  win32Param  = extend(commonParam, {platform:'win32',  icon: './image/elmtrn.ico'});
+  darwinParam = extend(commonParam, {platform:'darwin', icon: './image/elmdeck.icns'});
+  linuxParam  = extend(commonParam, {platform:'linux',  icon: './image/elmdeck.png'});
+  win32Param  = extend(commonParam, {platform:'win32',  icon: './image/elmdeck.ico'});
   packager(darwinParam, console.log);
   packager(linuxParam , console.log);
   packager(win32Param , console.log);

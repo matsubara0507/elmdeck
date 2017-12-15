@@ -1,5 +1,5 @@
 {
-  "name": "elmtrn",
+  "name": "elmdeck",
   "main": "./app/js/app.js",
   "scripts": {
     "run": "./node_modules/.bin/electron ."
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yasuyuky/elmtrn"
+    "url": "https://github.com/matsubara0507/elmdeck"
   },
   "license": "MIT"
 }
