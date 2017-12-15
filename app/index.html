@@ -83,14 +83,17 @@
 				submenu: [
 					{
 						label: 'Open',
+						accelerator: 'Ctrl+O',
 						click() { files.readFile(app) }
 					},
 					{
 						label: 'Save',
+						accelerator: 'Ctrl+S',
 						click() { files.writeFile(app) }
 					},
 					{
 						label: 'Save As',
+						accelerator: 'Ctrl+Shift+S',
 						click() { files.writeFileAs(app) }
 					}
 				]
