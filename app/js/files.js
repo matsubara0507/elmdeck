@@ -23,7 +23,7 @@ module.exports = {
         title: 'File',
         defaultPath: '.',
         filters: [
-            {name: 'マークダウン', extensions: ['md', 'markdown']},
+            {name: 'Markdown', extensions: ['md', 'markdown']},
         ]
     }, (fileNames) => {
         fs.readFile(fileNames[0], 'utf8', (err, data) => {
