@@ -54,6 +54,7 @@ type Msg
     = TextAreaInput String
     | SizeUpdated Window.Size
     | ReadFile FS.File
+    | WriteFileHook (Maybe String)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -67,6 +68,12 @@ update msg model =
 
         ReadFile file ->
             ( { model | textarea = file.body, filepath = file.path }, Cmd.none )
+
+        WriteFileHook (Just filepath) ->
+            ( model, FS.writeFile { path = filepath, body = model.textarea } )
+
+        WriteFileHook Nothing ->
+            ( model, FS.writeFile { path = model.filepath, body = model.textarea } )
 
 
 view : Model -> Html Msg
@@ -223,6 +230,7 @@ subscriptions model =
     Sub.batch
         [ Window.resizes SizeUpdated
         , FS.readFile ReadFile
+        , FS.writeFileHook WriteFileHook
         ]
 
 

@@ -84,6 +84,14 @@
 					{
 						label: 'Open',
 						click() { files.readFile(app) }
+					},
+					{
+						label: 'Save',
+						click() { files.writeFile(app) }
+					},
+					{
+						label: 'Save As',
+						click() { files.writeFileAs(app) }
 					}
 				]
 			}

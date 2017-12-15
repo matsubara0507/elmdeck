@@ -8,3 +8,9 @@ type alias File =
 
 
 port readFile : (File -> msg) -> Sub msg
+
+
+port writeFileHook : (Maybe String -> msg) -> Sub msg
+
+
+port writeFile : File -> Cmd msg
