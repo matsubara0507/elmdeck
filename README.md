@@ -2,15 +2,17 @@
 
 Markdown presentation writer with Elm.
 
+This app is Electron app (referred to [elmtrn](https://github.com/yasuyuky/elmtrn)).
+
 ## Feature
 
 - [x] Common Markdown
 - [x] Code highlight
 - [x] Formula
 - [ ] Scales the image up/down
-- [ ] Read from/Write to local file
+- [x] Read from/Write to local file
 - [ ] Customize CSS
-- [ ] Shortcut
+- [x] Shortcut
 - [ ] Presentation mode
 
 ## Usage
@@ -26,3 +28,5 @@ if you want to syntax highlight using customize highlight.js, [download highligh
 ## Demo
 
 on [GitHub Pages](https://matsubara0507.github.io/elmdeck/)
+
+but, Implemented features are only Code highlight and Formula.
