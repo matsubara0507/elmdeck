@@ -1,4 +1,10 @@
 port module Port.FS exposing (..)
 
 
-port readFile : (String -> msg) -> Sub msg
+type alias File =
+    { path : String
+    , body : String
+    }
+
+
+port readFile : (File -> msg) -> Sub msg

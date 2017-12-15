@@ -30,6 +30,7 @@ main =
 type alias Model =
     { textarea : String
     , window : Window.Size
+    , filepath : String
     }
 
 
@@ -37,6 +38,7 @@ model : Model
 model =
     { textarea = ""
     , window = { width = 0, height = 0 }
+    , filepath = ""
     }
 
 
@@ -51,6 +53,7 @@ init model =
 type Msg
     = TextAreaInput String
     | SizeUpdated Window.Size
+    | ReadFile FS.File
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -61,6 +64,9 @@ update msg model =
 
         SizeUpdated size ->
             ( { model | window = size }, Cmd.none )
+
+        ReadFile file ->
+            ( { model | textarea = file.body, filepath = file.path }, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -216,7 +222,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Window.resizes SizeUpdated
-        , FS.readFile TextAreaInput
+        , FS.readFile ReadFile
         ]
 
 
