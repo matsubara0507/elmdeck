@@ -82,7 +82,7 @@ view model =
         [ div [ halfStyle model.window ]
             [ textarea
                 [ onInput TextAreaInput
-                , defaultValue model.textarea
+                , value model.textarea
                 , textareaStyle
                 ]
                 []
