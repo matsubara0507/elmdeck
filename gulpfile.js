@@ -40,4 +40,4 @@ g.task('package', ['elm'], ()=>{
 
 })
 
-g.task('default', ['watch',])
+g.task('default', ['elm','watch'])
