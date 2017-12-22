@@ -70,7 +70,7 @@ update msg model =
             ( { model | textarea = file.body, filepath = file.path }, Cmd.none )
 
         WriteFileHook (Just filepath) ->
-            ( model, FS.writeFile { path = filepath, body = model.textarea } )
+            ( { model | filepath = filepath }, FS.writeFile { path = filepath, body = model.textarea } )
 
         WriteFileHook Nothing ->
             ( model, FS.writeFile { path = model.filepath, body = model.textarea } )
